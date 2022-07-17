@@ -127,6 +127,15 @@ learngit token:
 查看分支的合并情况：git log --graph --pretty=oneline --abbrev-commit   
 
 
+添加电脑密钥：
+找到.ssh文件夹;
+生成id_rsa和id_rsa.pub两个文件： ssh-keygen -t rsa-C 1181545104@qq.com
+登录GitHub，打开“Account settings”，“SSH Keys”页面：
+然后，点“Add SSH Key”，填上任意Title，在Key文本框里粘贴id_rsa.pub文件的内容：
+测试：ssh -T git@github.com
+即可克隆文件。
+
+
 
 
   
