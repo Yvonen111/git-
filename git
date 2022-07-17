@@ -1,0 +1,132 @@
+创建版本库：
+  先新建文件夹
+  git init  （ls -ah)
+  
+  git config --global user.email "1181545104@qq.com"
+  git config --global user.name "Yvonen111"
+
+  
+把文件添加到版本库:
+  git add file1.txt
+  git add file2.txt file3.txt
+  git commit -m "add 3 files."
+  
+
+添加文件到Git仓库，分两步：
+    使用命令git add <file>，注意，可反复多次使用，添加多个文件；
+    使用命令git commit -m <message>，完成。
+
+查看历史记录：
+  git log
+  git log --pretty=oneline   #commit id（版本号）
+  
+  git reset --hard HEAD^  #上一个版本就是HEAD^，上上一个版本就是HEAD^^，当然往上100个版本写100个^比较容易数不过来，所以写成HEAD~100。
+  cat readme.txt  #查看文件内容
+  git reset --hard 1094a  #退回到指定版本
+  git reflog  #记录每次命令
+  git status    #查看一下状态：
+  
+撤销修改：
+  git checkout -- file    #可以丢弃工作区的修改    
+  
+  把readme.txt文件在工作区的修改全部撤销，这里有两种情况：
+  一种是readme.txt自修改后还没有被放到暂存区，现在，撤销修改就回到和版本库一模一样的状态；
+  一种是readme.txt已经添加到暂存区后，又作了修改，现在，撤销修改就回到添加到暂存区后的状态。
+  总之，就是让这个文件回到最近一次git commit或git add时的状态。命令中的--很重要，没有--，就变成了“切换到另一个分支”的命令，我们在后面的分支管理中会再次遇到git checkout命令。
+  
+  git reset HEAD <file>可以把暂存区的修改撤销掉（unstage），重新放回工作区：
+  git reset命令既可以回退版本，也可以把暂存区的修改回退到工作区。
+  当我们用HEAD时，表示最新的版本。
+  再用git status查看一下，现在暂存区是干净的，工作区有修改：
+  
+删除文件：
+  1. 手动删除 / rm 文件;
+     工作区和版本库就不一致了，git status命令会立刻告诉你哪些文件被删除了：
+          一 是确实要从版本库中删除该文件，那就用命令git rm删掉，并且git commit：   
+                若已经git commit,  可以通过   git reset --hard 1094a  #退回到指定版本  
+          二 删错了，因为版本库里还有呢（在工作区间），所以可以很轻松地把误删的文件恢复到最新版本：  git checkout -- test.txt
+          
+          
+          git rm test.txt 相当于是删除工作目录中的test.txt文件,并把此次删除操作提交到了暂存区
+          使用git checkout -- test.txt相当于是让工作目录test.txt恢复到暂存区中test.txt的状态,
+          
+          但是工作目录中test.txt已经被删除,无法找到文件来再次删除所以报错,
+           必须先使用git reset head test.txt在暂存区中将删除操作丢弃,
+            然后在git checkout -- test.txt就是直接将工作目录中test.txt恢复到版本库中的状态.
+  
+         手动修改
+         工作区的改动（红色）       （使用 "git add/rm <文件>..." 更新要提交的内容）
+                                    （使用 "git checkout -- <文件>..." 丢弃工作区的改动）
+         
+         git add/rm  <文件>
+         提交到暂存区  （绿色）      （使用 "git commit -m "  " " 提交暂存）
+                                    （使用 "git reset HEAD <文件>..." 以取消暂存）
+                  
+         git commit -m "  "
+         提交暂存区的操作
+         
+添加远程库：
+远程连接：        
+         
+learngit token:
+   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
+   
+   git remote set-url origin https://<your_token>@github.com/<USERNAME>/<REPO>.git
+    <your_token>：换成你自己得到的token
+    <USERNAME>：是你自己github的用户名
+    <REPO>：是你的仓库名称
+
+  git remote add origin https://github.com/Yvonen111/learngit.git
+  git remote set-url origin https://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@github.com/Yvonen111/learngit.git  
+  
+  git remote add origin git@github.com:Yvonen111/learn.git 
+  git push -u origin master
+  
+  git push origin master    
+  
+删除远程连接：  
+  git remote -v       
+	git remote rm origin
+  
+从远程库克隆：
+	git clone https://github.com/Yvonen111/learngit.git
+	git clone git@github.com:Yvonen111/learn.git 
+
+创建分支：
+	git checkout -b dev			# 加上-b参数表示创建并切换
+			||
+	git branch dev
+	git checkout dev
+			||
+	git switch -c dev			# 创建并切换到新的dev分支
+	
+	git branch  	# 查看当前分支
+	//修改文件   add commit
+
+合并分支：
+	git checkout master   #切换回master分支 
+				||
+	git switch master		#切换到已有的master分支
+	
+	git merge dev			#把dev分支的工作成果合并到master分支
+	
+	git branch -d dev		#删除dev分支
+
+小结：
+查看分支：git branch
+创建分支：git branch <name>
+切换分支：git checkout <name>或者git switch <name>
+创建+切换分支：git checkout -b <name>或者git switch -c <name>
+合并某分支到当前分支：git merge <name>
+删除分支：git branch -d <name>
+
+
+
+解决合并冲突：
+（分支修改并提交了，切换到master后，又修改文件并提交，会产生冲突。需要查看文件内容，修改并提交）
+查看分支的合并情况：git log --graph --pretty=oneline --abbrev-commit   
+
+
+
+
+  
