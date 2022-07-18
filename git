@@ -233,3 +233,21 @@ feature分支：
 		git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 		git lg
 		
+如果一个参数没有空格，就可以不用引号:		git commit -m update
+如果一个参数有空格，就必须加引号：			git commit -m "update README.txt"
+如果参数有双引号就用单引号：						git commit -m 'update "README.txt"'
+如果参数有单引号就用双引号：						git commit -m "update 'README.txt'"
+
+搭建git服务器：
+		GitHub就是一个免费托管开源代码的远程仓库。但是对于某些视源代码如生命的商业公司来说，既不想公开源代码，又舍不得给GitHub交保护费，那就只能自己搭建一台Git服务器作为私有仓库使用。
+		&安装git：		sudo apt-get install git
+		&创建一个git用户，用来运行git服务：		sudo adduser git
+		&创建证书登录：		收集所有需要登录的用户的公钥，就是他们自己的id_rsa.pub文件，把所有公钥导入到/home/git/.ssh/authorized_keys文件里，一行一个。
+		&初始化Git仓库：	先选定一个目录作为Git仓库，假定是/srv/sample.git，在/srv目录下输入命令：		sudo git init --bare sample.git
+		&把owner改为git：		sudo chown -R git:git sample.git
+		&禁用shell登录：通过编辑/etc/passwd文件完成。找到类似下面的一行：git:x:1001:1001:,,,:/home/git:/bin/bash		改为：  git:x:1001:1001:,,,:/home/git:/usr/bin/git-shell
+		git用户可以正常通过ssh使用git，但无法登录shell，因为我们为git用户指定的git-shell每次一登录就自动退出。
+		&克隆远程仓库：		git clone git@server:/srv/sample.git
+
+
+		
