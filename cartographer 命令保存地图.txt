@@ -1,0 +1,302 @@
+rosservice call /finish_trajectory 0
+rosservice call /write_state ${HOME}/map/cartographer_3d.pbstream 1
+/start_trajectory
+
+
+
+rosservice call /finish_trajectory 0
+
+
+
+rosservice call /write_state "{filename: '${HOME}/Downloads/map4555.pbstream'}"	
+	
+
+rosrun cartographer_ros cartographer_pbstream_to_ros_map -map_filestem=/home/dyzx/Downloads/map4555 -pbstream_filename=/home/dyzx/Downloads/map4555.pbstream -resolution=0.05
+
+
+
+航班信息
+
+//BFS，使用 邻接矩阵+队列 实现
+
+#include <iostream>
+
+#include <queue>
+
+ 
+
+using namespace std;
+
+ 
+
+#define MAX_VERTS 20
+
+ 
+
+class Vertex
+
+{
+
+public:
+
+	Vertex(char lab)
+
+	{
+
+		Label = lab;
+
+		wasVisited = false;
+
+	}
+
+public:
+
+	bool wasVisited;
+
+	char Label;
+
+};
+
+ 
+
+class Graph
+
+{
+
+public:
+
+	Graph();
+
+	~Graph();
+
+	void addVertex(char lab);
+
+	void addEdge(int start, int end);
+
+	void printMatrix();
+
+	void showVertex(int v);
+
+	void BFS();
+
+private:
+
+	Vertex* vertexList[MAX_VERTS];
+
+	int nVerts;
+
+	int adjMat[MAX_VERTS][MAX_VERTS];
+
+ 
+
+	int getAdjUnvisitedVertex(int v);
+
+};
+
+ 
+
+Graph::Graph()
+
+{
+
+	nVerts = 0;
+
+	for (int i = 0; i < MAX_VERTS; i++)
+
+	{
+
+		for (int j = 0; j < MAX_VERTS; j++)
+
+		{
+
+			adjMat[i][j] = 0;
+
+		}
+
+	}
+
+}
+
+ 
+
+Graph::~Graph()
+
+{
+
+	//delete[] vertexList;
+
+}
+
+//添加顶点
+
+void Graph::addVertex(char lab)
+
+{
+
+	vertexList[nVerts++] = new Vertex(lab);
+
+}
+
+//添加边
+
+void Graph::addEdge(int start, int end)
+
+{
+
+	adjMat[start][end] = 1;
+
+	adjMat[end][start] = 1;
+
+}
+
+ 
+
+void Graph::printMatrix()
+
+{
+
+	for (int i = 0; i < nVerts; i++)
+
+	{
+
+		for (int j = 0; j < nVerts; j++)
+
+		{
+
+			cout << adjMat[i][j] << " ";
+
+		}
+
+		cout << endl;
+
+	}
+
+}
+
+//显示顶点标签
+
+void Graph::showVertex(int v)
+
+{
+
+	cout << vertexList[v]->Label << " ";
+
+}
+
+ 
+
+//获得相邻接未访问过的下一个顶点
+
+int Graph::getAdjUnvisitedVertex(int v)
+
+{
+
+	for (int j = 0; j < nVerts; j++)
+
+	{
+
+		//邻接的并且没被访问过
+
+		if ((adjMat[v][j] == 1) && (vertexList[j]->wasVisited == false))
+
+			return j;
+
+	}
+
+ 
+
+	return -1;
+
+}
+
+ 
+
+ 
+
+void Graph::BFS()
+
+{
+
+	queue<int> gQueue;
+
+	vertexList[0]->wasVisited = true;
+
+	showVertex(0);
+
+	gQueue.push(0);
+
+ 
+
+	int vert1, vert2;
+
+	while (gQueue.size() > 0)
+
+	{
+
+		vert1 = gQueue.front();
+
+		gQueue.pop();
+
+		vert2 = getAdjUnvisitedVertex(vert1);
+
+		while (vert2 != -1)	//找到所有与vert1相邻接的顶点
+
+		{
+
+			vertexList[vert2]->wasVisited = true;
+
+			showVertex(vert2);
+
+			gQueue.push(vert2);	//将访问过的顶点放入队列
+
+			vert2 = getAdjUnvisitedVertex(vert1);
+
+		}
+
+	}
+
+ 
+
+	cout << endl;
+
+	//为了下一次搜索再把wasVisited变成false
+
+	for (int j = 0; j < nVerts; j++)
+
+		vertexList[j]->wasVisited = false;
+
+}
+
+ 
+
+int main()
+
+{
+
+	Graph g;
+
+	g.addVertex('A');
+
+	g.addVertex('B');
+
+	g.addVertex('C');
+
+	g.addEdge(0, 1);
+
+	g.addEdge(0, 2);
+
+ 
+
+	g.printMatrix();
+
+ 
+
+	g.BFS();
+
+ 
+
+	system("pause");
+
+	return 0;
+
+}
